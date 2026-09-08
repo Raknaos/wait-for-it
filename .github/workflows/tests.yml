@@ -10,14 +10,63 @@ jobs:
           python-version: "3.x"
       - name: Auto-detect and run checks
         run: |
-          set -e
           rc=0
-          if ls test_*.py *_test.py >/dev/null 2>&1 || [ -d tests ]; then
-            python3 -m unittest discover -v || rc=1
-          fi
-          for f in test/container-runners.py
-test/wait-for-it.py
-test_wait_for_it.py; do python3 -m py_compile "" || rc=1; done
+          for f in test_wait_for_it.py; do
+            if grep -q "__main__" ""; then
+              python3 "" || rc=1
+            else
+              out=Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/lib/python3.12/unittest/__main__.py", line 18, in <module>
+    main(module=None)
+  File "/usr/lib/python3.12/unittest/main.py", line 104, in __init__
+    self.parseArgs(argv)
+  File "/usr/lib/python3.12/unittest/main.py", line 153, in parseArgs
+    self.createTests()
+  File "/usr/lib/python3.12/unittest/main.py", line 164, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/loader.py", line 207, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Empty module name
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 228, in partial_apport_excepthook
+    return apport_excepthook(binary, exc_type, exc_obj, exc_tb)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 114, in apport_excepthook
+    report["ExecutableTimestamp"] = str(int(os.stat(binary).st_mtime))
+                                            ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/opt/ghlab/repos/work/wait-for-it/-m'
+
+Original exception was:
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/lib/python3.12/unittest/__main__.py", line 18, in <module>
+    main(module=None)
+  File "/usr/lib/python3.12/unittest/main.py", line 104, in __init__
+    self.parseArgs(argv)
+  File "/usr/lib/python3.12/unittest/main.py", line 153, in parseArgs
+    self.createTests()
+  File "/usr/lib/python3.12/unittest/main.py", line 164, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/loader.py", line 207, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Empty module name || { echo ""; rc=1; }
+            fi
+          done
+          for f in test_wait_for_it.py; do python3 -m py_compile "" || rc=1; done
           for f in wait-for-it.sh; do bash -n "" || rc=1; done
           if [ "" -ne 0 ]; then echo "checks failed"; exit 1; fi
           echo "all auto-detected checks green"
