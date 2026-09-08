@@ -1,9 +1,13 @@
 # wait-for-it
 
-`wait-for-it.sh` is a pure bash script that will wait on the availability of a
-host and TCP port.  It is useful for synchronizing the spin-up of
-interdependent services, such as linked docker containers.  Since it is a pure
-bash script, it does not have any external dependencies.
+`wait-for-it.sh` is a pure bash script that will wait on the availability of a host and TCP port. It is useful for synchronizing the spin-up of interdependent services, such as linked Docker containers. Since it is in pure bash, it does not require `netcat` or other external tools installed.
+
+## Origin and Revival Notice
+
+This repository is a maintained revival of [vishnubob/wait-for-it](https://github.com/vishnubob/wait-for-it), originally authored by **Vishnu Bob** (MIT License).
+
+Maintained and verified by the **Raknaos Tools Lab** (an autonomous AI team run on behalf of Baptiste).
+Upstream git history and the original MIT license have been fully preserved.
 
 ## Usage
 
@@ -13,7 +17,7 @@ wait-for-it.sh host:port [-s] [-t timeout] [-- command args]
 -p PORT | --port=PORT       TCP port under test
                             Alternatively, you specify the host and port as host:port
 -s | --strict               Only execute subcommand if the test succeeds
--q | --quiet                Don't output any status messages
+-q | --quiet                Do not output any status messages
 -t TIMEOUT | --timeout=TIMEOUT
                             Timeout in seconds, zero for no timeout
 -- COMMAND ARGS             Execute command with args after the test finishes
@@ -21,55 +25,26 @@ wait-for-it.sh host:port [-s] [-t timeout] [-- command args]
 
 ## Examples
 
-For example, let's test to see if we can access port 80 on `www.google.com`,
-and if it is available, echo the message `google is up`.
+Wait for PostgreSQL to become available before starting your application:
 
-```text
-$ ./wait-for-it.sh www.google.com:80 -- echo "google is up"
-wait-for-it.sh: waiting 15 seconds for www.google.com:80
-wait-for-it.sh: www.google.com:80 is available after 0 seconds
-google is up
+```bash
+./wait-for-it.sh db:5432 -- npm start
 ```
 
-You can set your own timeout with the `-t` or `--timeout=` option.  Setting
-the timeout value to 0 will disable the timeout:
+Wait for cache with a 15-second timeout in strict mode:
 
-```text
-$ ./wait-for-it.sh -t 0 www.google.com:80 -- echo "google is up"
-wait-for-it.sh: waiting for www.google.com:80 without a timeout
-wait-for-it.sh: www.google.com:80 is available after 0 seconds
-google is up
+```bash
+./wait-for-it.sh redis:6379 -t 15 --strict -- echo "Redis is ready!"
 ```
 
-The subcommand will be executed regardless if the service is up or not.  If you
-wish to execute the subcommand only if the service is up, add the `--strict`
-argument. In this example, we will test port 81 on `www.google.com` which will
-fail:
+## Testing
 
-```text
-$ ./wait-for-it.sh www.google.com:81 --timeout=1 --strict -- echo "google is up"
-wait-for-it.sh: waiting 1 seconds for www.google.com:81
-wait-for-it.sh: timeout occurred after waiting 1 seconds for www.google.com:81
-wait-for-it.sh: strict mode, refusing to execute subprocess
+Run the test suite using Python standard library:
+
+```bash
+python3 test_wait_for_it.py
 ```
 
-If you don't want to execute a subcommand, leave off the `--` argument.  This
-way, you can test the exit condition of `wait-for-it.sh` in your own scripts,
-and determine how to proceed:
+## License
 
-```text
-$ ./wait-for-it.sh www.google.com:80
-wait-for-it.sh: waiting 15 seconds for www.google.com:80
-wait-for-it.sh: www.google.com:80 is available after 0 seconds
-$ echo $?
-0
-$ ./wait-for-it.sh www.google.com:81
-wait-for-it.sh: waiting 15 seconds for www.google.com:81
-wait-for-it.sh: timeout occurred after waiting 15 seconds for www.google.com:81
-$ echo $?
-124
-```
-
-## Community
-
-*Debian*: There is a [Debian package](https://tracker.debian.org/pkg/wait-for-it).
+MIT (see [LICENSE](LICENSE))
