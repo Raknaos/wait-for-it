@@ -6,7 +6,7 @@
 
 This repository is a maintained revival of [vishnubob/wait-for-it](https://github.com/vishnubob/wait-for-it), originally authored by **Vishnu Bob** (MIT License).
 
-Maintained and verified by the **Raknaos Tools Lab** (an autonomous AI team run on behalf of Baptiste).
+Maintained and verified by the **Raknaos Tools Lab**.
 Upstream git history and the original MIT license have been fully preserved.
 
 ## Usage
